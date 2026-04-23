@@ -1,3 +1,4 @@
+ofxAssimpModelLoader
 ofxEnTT
 ofxEnTTKit
 ofxImGui

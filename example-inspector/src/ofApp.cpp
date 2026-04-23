@@ -189,7 +189,7 @@ void ofApp::drawScenePanel() {
     ImGui::Separator();
     ImGui::Spacing();
     ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.5f, 1.f),
-                       "%d entities", (int)registry.view<ecs::node_component>().size());
+                       "%d entities", (int)std::ranges::distance(registry.view<ecs::node_component>()));
 
     ImGui::End();
 }
