@@ -66,7 +66,7 @@ void ofApp::createDemoEntities() {
         node.node.setName("Circle");
 
         auto& shape = registry.emplace<ecs::shape2d_component>(e);
-        shape.type = ecs::ShapeType::Circle;
+        shape.type = ecs::Shape2DType::Circle;
         shape.fillColor = ofColor(100, 220, 140);
         shape.strokeColor = ofColor(255);
         shape.strokeWidth = 2;
@@ -109,8 +109,8 @@ void ofApp::draw() {
 
     // Full-screen dockspace
     ImGuiViewport* vp = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(vp->WorkPos);
-    ImGui::SetNextWindowSize(vp->WorkSize);
+    ImGui::SetNextWindowPos(vp->GetWorkPos());
+    ImGui::SetNextWindowSize(vp->GetWorkSize());
     ImGui::SetNextWindowViewport(vp->ID);
     ImGuiWindowFlags hostFlags =
         ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
@@ -189,7 +189,7 @@ void ofApp::drawScenePanel() {
     ImGui::Separator();
     ImGui::Spacing();
     ImGui::TextColored(ImVec4(0.4f, 0.4f, 0.5f, 1.f),
-                       "%d entities", (int)std::ranges::distance(registry.view<ecs::node_component>()));
+                       "%d entities", (int)registry.view<ecs::node_component>().size());
 
     ImGui::End();
 }
