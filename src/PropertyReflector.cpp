@@ -59,6 +59,7 @@ std::vector<ReflectedProperty> getEntityProperties(entt::registry& reg, entt::en
     REFLECT(ecs::canvas_effects_component)
 
     REFLECT(ecs::uv_component)
+    REFLECT(ecs::uv_sample_component)
 
     REFLECT(ecs::swatch_library_component)
     REFLECT(ecs::color_gradient_component)

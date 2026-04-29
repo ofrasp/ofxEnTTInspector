@@ -110,8 +110,14 @@ void registerProperties(ecs::uv_component& comp, ComponentInspector& inspector,
 // UV Sample Component Inspector
 // ============================================================================
 
+void registerProperties(ecs::uv_sample_component& comp, ComponentInspector& inspector) {
+    inspector.addProperty("Auto Sample", &comp.autoSample);
+}
+
 void registerProperties(ecs::uv_sample_component& comp, ComponentInspector& inspector,
                         entt::registry& registry, entt::entity /*entity*/) {
+    registerProperties(comp, inspector);
+
     inspector.addCustomProperty("UV Source", [&comp, &registry]() {
         std::vector<std::pair<entt::entity, std::string>> uvEntities;
         uvEntities.push_back({entt::null, "(None)"});
@@ -135,10 +141,6 @@ void registerProperties(ecs::uv_sample_component& comp, ComponentInspector& insp
             ImGui::EndCombo();
         }
         ImGui::PopItemWidth();
-    });
-    inspector.addCustomProperty("Auto Sample", [&comp]() {
-        ImGui::Checkbox("##AutoSample", &comp.autoSample);
-        ImGui::SameLine(); ImGui::TextDisabled("(sample every frame)");
     });
     inspector.addCustomProperty("Status", [&comp, &registry]() {
         if (comp.uvEntity == entt::null) ImGui::TextDisabled("No UV source selected");
