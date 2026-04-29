@@ -5,7 +5,7 @@ ImGui inspector UI for [ofxEnTTKit](https://github.com/ofrasp/ofxEnTTKit) ECS co
 - No app framework dependency — works with any `entt::registry`  
 - File dialogs via [ofxImGuiFileDialog](https://github.com/ofrasp/ofxImGuiFileDialog)  
 - Works on Linux, Linux ARM (Raspberry Pi), macOS, Windows  
-- Full component coverage: base, rendering, animation, 2D graphics, hardware, LED/UV, swatches, filters, generators, modulators  
+- Full component coverage: base, rendering, animation, 2D/3D graphics, hardware, LED/UV, swatches, filters, generators, modulators
 
 ## Dependencies
 
