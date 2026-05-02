@@ -109,8 +109,8 @@ void ofApp::draw() {
 
     // Full-screen dockspace
     ImGuiViewport* vp = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(vp->GetWorkPos());
-    ImGui::SetNextWindowSize(vp->GetWorkSize());
+    ImGui::SetNextWindowPos(vp->WorkPos);
+    ImGui::SetNextWindowSize(vp->WorkSize);
     ImGui::SetNextWindowViewport(vp->ID);
     ImGuiWindowFlags hostFlags =
         ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
