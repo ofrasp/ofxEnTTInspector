@@ -335,10 +335,11 @@ void registerProperties(ecs::tag_component& comp, ComponentInspector& inspector)
 void registerProperties(ecs::mesh_component& comp, ComponentInspector& inspector) {
     std::vector<std::string> primTypes = {"Custom","Box","Sphere","Cone","Cylinder","Plane","Icosphere","Icosahedron","Skybox"};
     inspector.addCustomProperty("Type", [&comp, primTypes]() {
+        std::vector<const char*> labels;
+        labels.reserve(primTypes.size());
+        for (const auto& s : primTypes) labels.push_back(s.c_str());
         int cur = (int)comp.primitiveType;
-        if (ImGui::Combo("##primType", &cur, [](void* d, int i, const char** out) {
-            *out = (*static_cast<std::vector<std::string>*>(d))[i].c_str(); return true;
-        }, (void*)&primTypes, (int)primTypes.size())) {
+        if (ImGui::Combo("##primType", &cur, labels.data(), (int)labels.size())) {
             comp.primitiveType = (ecs::eMeshPrimitiveType)cur;
             comp.rebuild();
         }
