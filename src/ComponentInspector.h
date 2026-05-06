@@ -124,11 +124,11 @@ public:
     void addEnumProperty(const std::string& name, T* value,
                          const std::vector<std::string>& options) {
         m_properties.push_back({name, [=]() -> bool {
+            std::vector<const char*> labels;
+            labels.reserve(options.size());
+            for (const auto& s : options) labels.push_back(s.c_str());
             int cur = static_cast<int>(*value);
-            if (ImGui::Combo(name.c_str(), &cur,
-                [](void* data, int idx) -> const char* {
-                    return (*static_cast<const std::vector<std::string>*>(data))[idx].c_str();
-                }, (void*)&options, (int)options.size())) {
+            if (ImGui::Combo(name.c_str(), &cur, labels.data(), (int)labels.size())) {
                 *value = static_cast<T>(cur);
                 return true;
             }
