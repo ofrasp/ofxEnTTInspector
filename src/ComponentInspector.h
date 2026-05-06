@@ -126,9 +126,8 @@ public:
         m_properties.push_back({name, [=]() -> bool {
             int cur = static_cast<int>(*value);
             if (ImGui::Combo(name.c_str(), &cur,
-                [](void* data, int idx, const char** out) {
-                    *out = (*static_cast<const std::vector<std::string>*>(data))[idx].c_str();
-                    return true;
+                [](void* data, int idx) -> const char* {
+                    return (*static_cast<const std::vector<std::string>*>(data))[idx].c_str();
                 }, (void*)&options, (int)options.size())) {
                 *value = static_cast<T>(cur);
                 return true;

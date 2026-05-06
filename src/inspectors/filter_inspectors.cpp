@@ -430,4 +430,12 @@ void registerProperties(ecs::state_morph_component& c, ComponentInspector& inspe
     });
 }
 
+void registerProperties(ecs::canvas_effects_component& c, ComponentInspector& inspector) {
+    inspector.addProperty("Auto Apply",    &c.autoApply);
+    inspector.addProperty("Use Ping-Pong", &c.usePingPong);
+    inspector.addCustomProperty("Effect Count", [&c] {
+        ImGui::Text("Effects in stack: %d", c.getEffectCount());
+    });
+}
+
 } // namespace inspector

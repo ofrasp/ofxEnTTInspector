@@ -5,6 +5,7 @@
 #include "ofxEnTTKit/src/components/draw_filter_components.h"
 #include "ofxEnTTKit/src/components/eased_pulse_component.h"
 #include "ofxEnTTKit/src/components/state_components.h"
+#include "ofxEnTTKit/src/components/canvas_effects_component.h"
 #include "../ComponentInspector.h"
 
 namespace inspector {
@@ -39,5 +40,7 @@ void registerProperties(ecs::state_preset_component& c, ComponentInspector& insp
 void registerProperties(ecs::state_library_component& c, ComponentInspector& inspector);
 void registerProperties(ecs::state_timeline_component& c, ComponentInspector& inspector);
 void registerProperties(ecs::state_morph_component& c, ComponentInspector& inspector);
+
+void registerProperties(ecs::canvas_effects_component& c, ComponentInspector& inspector);
 
 } // namespace inspector
