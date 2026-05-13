@@ -8,6 +8,7 @@
 #include <vector>
 #include <filesystem>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace inspector {
 
@@ -89,13 +90,6 @@ public:
         m_reflected.emplace_back(name, PinDataType::Vec3, value, min, max);
     }
 
-    void addProperty(const std::string& name, glm::vec4* value,
-                     float min = -FLT_MAX, float max = FLT_MAX, float speed = 1.f) {
-        m_properties.push_back({name, [=]() -> bool {
-            return ImGui::DragFloat4(name.c_str(), (float*)value, speed, min, max);
-        }});
-    }
-
     void addProperty(const std::string& name, ofColor* value) {
         m_properties.push_back({name, [value, name]() -> bool {
             ofFloatColor fc = *value;
@@ -118,6 +112,26 @@ public:
             }
             return false;
         }});
+    }
+
+    void addProperty(const std::string& name, glm::vec4* value,
+                     float min = -FLT_MAX, float max = FLT_MAX, float speed = 1.f) {
+        m_properties.push_back({name, [=]() -> bool {
+            return ImGui::DragFloat4(name.c_str(), (float*)value, speed, min, max);
+        }});
+        m_reflected.emplace_back(name, PinDataType::Vec4, value, min, max);
+    }
+
+    void addProperty(const std::string& name, glm::quat* value) {
+        m_properties.push_back({name, [value, name]() -> bool {
+            glm::vec3 euler = glm::degrees(glm::eulerAngles(*value));
+            if (ImGui::DragFloat3(name.c_str(), (float*)&euler, 0.5f)) {
+                *value = glm::quat(glm::radians(euler));
+                return true;
+            }
+            return false;
+        }});
+        m_reflected.emplace_back(name, PinDataType::Quat, value, -1.f, 1.f);
     }
 
     template<typename T>
@@ -162,6 +176,12 @@ public:
     void addReflectable(const std::string& name, glm::vec3* v, float min = -1000.f, float max = 1000.f) {
         m_reflected.emplace_back(name, PinDataType::Vec3, v, min, max);
     }
+    void addReflectable(const std::string& name, glm::vec4* v, float min = -1000.f, float max = 1000.f) {
+        m_reflected.emplace_back(name, PinDataType::Vec4, v, min, max);
+    }
+    void addReflectable(const std::string& name, glm::quat* v) {
+        m_reflected.emplace_back(name, PinDataType::Quat, v, -1.f, 1.f);
+    }
     void addReflectable(const std::string& name, ofColor* v) {
         m_reflected.emplace_back(name, PinDataType::Color, v, 0.f, 255.f);
     }
@@ -185,10 +205,45 @@ public:
 
     const std::vector<ReflectedProperty>& getReflectedProperties() const { return m_reflected; }
 
+    const ReflectedProperty* findProperty(const std::string& name) const {
+        for (const auto& p : m_reflected) if (p.name == name) return &p;
+        return nullptr;
+    }
+    ReflectedProperty* findProperty(const std::string& name) {
+        for (auto& p : m_reflected) if (p.name == name) return &p;
+        return nullptr;
+    }
+
+    // Serialize all reflected properties to JSON via ofJSON.
+    // Requires #include "PropertyValue.h" (included transitively via PropertyReflector.h)
+    ofJson serialize() const;
+
+    // Deserialize property values from JSON. Returns true if any changed.
+    bool deserialize(const ofJson& j);
+
 private:
     std::string                    m_componentName;
     std::vector<PropertyInfo>      m_properties;
     std::vector<ReflectedProperty> m_reflected;
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Generic registerProperties hook
+//
+// Specialize this template for any component type that should be reflectable
+// without being part of ofxEnTTKit. The specialization is then automatically
+// used by the Inspector UI, ofxTanim, ofxEnTTStateCollector, and the node editor.
+//
+// Example:
+//   template<>
+//   inline void inspector::registerProperties(my_comp& c, inspector::ComponentInspector& ci) {
+//       ci.addProperty("speed",  &c.speed,  0.f, 200.f);
+//       ci.addProperty("active", &c.active);
+//   }
+// ─────────────────────────────────────────────────────────────────────────────
+template<typename T>
+inline void registerProperties(T& /*comp*/, ComponentInspector& /*ci*/) {
+    // No-op default. Specialize for custom component types.
+}
 
 } // namespace inspector

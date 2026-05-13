@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include <magic_enum/magic_enum.hpp>
 #include <string>
 
 namespace inspector {
@@ -12,6 +13,8 @@ enum class PinDataType {
     String,
     Vec2,
     Vec3,
+    Vec4,
+    Quat,
     Color,
     Trigger,
     Any
@@ -30,6 +33,8 @@ inline ImU32 getPinColor(PinDataType type) {
         case PinDataType::String:  return IM_COL32(100, 200, 100, 255);
         case PinDataType::Vec2:    return IM_COL32(100, 200, 200, 255);
         case PinDataType::Vec3:    return IM_COL32(180, 130, 220, 255);
+        case PinDataType::Vec4:    return IM_COL32(140,  90, 200, 255);
+        case PinDataType::Quat:    return IM_COL32(200, 160,  60, 255);
         case PinDataType::Color:   return IM_COL32(255, 150, 200, 255);
         case PinDataType::Trigger: return IM_COL32(255, 255, 255, 255);
         case PinDataType::Any:     return IM_COL32(150, 150, 150, 255);
@@ -37,18 +42,23 @@ inline ImU32 getPinColor(PinDataType type) {
     }
 }
 
-inline const char* getPinTypeName(PinDataType type) {
+inline std::string getPinTypeName(PinDataType type) {
+    auto name = magic_enum::enum_name(type);
+    return name.empty() ? "Unknown" : std::string(name);
+}
+
+// Returns how many float curves are needed to represent this type in a timeline.
+inline int getPinCurveCount(PinDataType type) {
     switch (type) {
-        case PinDataType::Float:   return "Float";
-        case PinDataType::Int:     return "Int";
-        case PinDataType::Bool:    return "Bool";
-        case PinDataType::String:  return "String";
-        case PinDataType::Vec2:    return "Vec2";
-        case PinDataType::Vec3:    return "Vec3";
-        case PinDataType::Color:   return "Color";
-        case PinDataType::Trigger: return "Trigger";
-        case PinDataType::Any:     return "Any";
-        default:                   return "Unknown";
+        case PinDataType::Float:
+        case PinDataType::Int:
+        case PinDataType::Bool:    return 1;
+        case PinDataType::Vec2:    return 2;
+        case PinDataType::Vec3:    return 3;
+        case PinDataType::Vec4:
+        case PinDataType::Quat:
+        case PinDataType::Color:   return 4;
+        default:                   return 0;
     }
 }
 

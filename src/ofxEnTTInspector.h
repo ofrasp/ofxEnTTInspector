@@ -28,6 +28,7 @@
 
 #include "PinDataTypes.h"
 #include "PropertyReflector.h"
+#include "PropertyValue.h"
 #include "ComponentInspector.h"
 #include "TransformOriginComponent.h"
 #include "entity_inspector.h"

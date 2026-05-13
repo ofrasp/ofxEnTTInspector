@@ -1,11 +1,38 @@
 #include "PropertyReflector.h"
+#include "PropertyValue.h"
 #include "ComponentInspector.h"
+#include "ofJson.h"
 #include "inspectors/inspectors.h"
 #include <ofxEnTTKit.h>
 #include "ofxEnTTKit/src/components/filter_components.h"
 #include "ofxEnTTKit/src/components/eased_pulse_component.h"
 
 namespace inspector {
+
+// ─── PropertyReflector::serialize ────────────────────────────────────────────
+
+ofJson PropertyReflector::serialize() const
+{
+    ofJson j = ofJson::object();
+    for (const auto& prop : m_props) {
+        if (prop.type == PinDataType::Trigger || prop.type == PinDataType::Any) continue;
+        j[prop.name] = PropertyValue::from(prop).toJson();
+    }
+    return j;
+}
+
+// ─── PropertyReflector::deserialize ──────────────────────────────────────────
+
+bool PropertyReflector::deserialize(const ofJson& j)
+{
+    bool anyChanged = false;
+    for (auto& prop : m_props) {
+        if (!j.contains(prop.name)) continue;
+        PropertyValue::fromJson(j[prop.name], prop.type).apply(prop);
+        anyChanged = true;
+    }
+    return anyChanged;
+}
 
 #define REFLECT(T) if (reg.any_of<T>(e)) { inspector::registerProperties(reg.get<T>(e), col); }
 #define REFLECT_CTX(T) if (reg.any_of<T>(e)) { inspector::registerProperties(reg.get<T>(e), col, reg, e); }
@@ -94,6 +121,30 @@ std::vector<ReflectedProperty> getEntityProperties(entt::registry& reg, entt::en
     #undef REFLECT_CTX
 
     return col.getReflectedProperties();
+}
+
+// ─── ComponentInspector::serialize / deserialize ─────────────────────────────
+// Implemented here so PropertyValue.h is only included in one .cpp
+
+ofJson ComponentInspector::serialize() const
+{
+    ofJson j = ofJson::object();
+    for (const auto& prop : m_reflected) {
+        if (prop.type == PinDataType::Trigger || prop.type == PinDataType::Any) continue;
+        j[prop.name] = PropertyValue::from(prop).toJson();
+    }
+    return j;
+}
+
+bool ComponentInspector::deserialize(const ofJson& j)
+{
+    bool anyChanged = false;
+    for (auto& prop : m_reflected) {
+        if (!j.contains(prop.name)) continue;
+        PropertyValue::fromJson(j.at(prop.name), prop.type).apply(prop);
+        anyChanged = true;
+    }
+    return anyChanged;
 }
 
 void pullNodeTransformCaches(entt::registry& reg) {
